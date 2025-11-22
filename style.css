@@ -1,0 +1,17 @@
+body {
+  background: pink url("preview.png") center/cover no-repeat;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+.preview-image {
+  max-width: 200px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+canvas {
+  background: rgba(255,255,255,0.9);
+  border: 2px solid #333;
+}
