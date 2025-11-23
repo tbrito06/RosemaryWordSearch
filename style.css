@@ -4,9 +4,8 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-
     font-family: Arial, sans-serif;
-    font-size: 22px; /* make all text larger */
+    font-size: 22px;
     text-align: center;
     padding: 20px;
 }
@@ -14,6 +13,11 @@ body {
 /* Increase letter grid visibility */
 .grid td {
     font-size: 20px;
+    padding: 8px 10px;
+    border: 1px solid rgba(0,0,0,0.12);
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
 }
 
 /* Center the puzzle grid */
@@ -33,55 +37,45 @@ body {
     font-size: 22px;
 }
 
-/* Canvas fallback styles (only if used) */
-canvas {
-    background: rgba(255,255,255,0.9);
-    border: 2px solid #333;
-}
-
-/* visual for cells during drag/hover selection */
+/* Selected (dragging) */
 .grid td.selected {
   background: rgba(255, 235, 150, 0.9);
   transition: background 120ms;
 }
 
-/* visual for found letters */
+/* Found word (continuous line strike-through) */
 .grid td.found {
-  background: rgba(144, 238, 144, 0.95); /* light green */
-  color: #111;
-  font-weight: bold;
+    position: relative;
+    background-color: rgba(255, 230, 0, 0.6);
+    color: #111;
+    font-weight: bold;
 }
 
-/* visually strike-through found words */
+.grid td.found::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -2px;
+    right: -2px;
+    height: 3px;
+    background: red;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* Word list strike-through */
 .wordlist li.done {
-  text-decoration: line-through;
-  opacity: 0.6;
+    text-decoration: line-through;
+    opacity: 0.6;
 }
 
-/* ensure table cells are centered & spaced nicely */
-.grid td {
-  padding: 8px 10px;
-  border: 1px solid rgba(0,0,0,0.12);
-  text-align: center;
-  vertical-align: middle;
-  user-select: none; /* avoid accidental selection */
-}
-
-/* make the table itself auto-size and centered */
+/* Grid table */
 .grid {
   border-collapse: collapse;
   margin: 0 auto;
 }
 
-/* === found-letter strike-through + stronger highlight === */
-.grid td.found {
-  background: rgba(144, 238, 144, 0.95); /* light green */
-  color: #111;
-  font-weight: bold;
-  text-decoration: line-through; /* strike through the letter */
-}
-
-/* === Confetti styles (container + pieces) === */
+/* Confetti container */
 .confetti-container {
   position: fixed;
   left: 0;
@@ -93,6 +87,7 @@ canvas {
   z-index: 9999;
 }
 
+/* Confetti piece */
 .confetti {
   position: absolute;
   top: -10px;
@@ -100,14 +95,16 @@ canvas {
   opacity: 0.95;
   border-radius: 2px;
   transform-origin: center;
-  animation: confetti-fall 5s linear forwards, confetti-spin 2s linear infinite;
+  animation: confetti-fall 5s linear forwards,
+             confetti-spin 2s linear infinite;
 }
 
-/* fall from top to bottom while spinning */
+/* Confetti animations */
 @keyframes confetti-fall {
   from { transform: translateY(0) rotate(0deg); }
   to   { transform: translateY(110vh) rotate(720deg); }
 }
+
 @keyframes confetti-spin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
