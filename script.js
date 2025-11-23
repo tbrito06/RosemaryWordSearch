@@ -1,7 +1,6 @@
 // Word list (uppercase)
 const words = [
-  "MOTHER","LOVE","LAWYER","BABA","GARDEN","xxxxx",
-  "LOYAL","FAMILY","FRIENDSHIP","PASSIONATE","ROSEMARY"
+  "MOTHER","LOVE","LAWYER","BABA","GARDEN","XXXXX","LOYAL","FAMILY","FRIENDSHIP","PASSIONATE","ROSEMARY"
 ];
 
 const size = 15;
