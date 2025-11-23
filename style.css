@@ -72,3 +72,43 @@ canvas {
   border-collapse: collapse;
   margin: 0 auto;
 }
+
+/* === found-letter strike-through + stronger highlight === */
+.grid td.found {
+  background: rgba(144, 238, 144, 0.95); /* light green */
+  color: #111;
+  font-weight: bold;
+  text-decoration: line-through; /* strike through the letter */
+}
+
+/* === Confetti styles (container + pieces) === */
+.confetti-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 9999;
+}
+
+.confetti {
+  position: absolute;
+  top: -10px;
+  display: inline-block;
+  opacity: 0.95;
+  border-radius: 2px;
+  transform-origin: center;
+  animation: confetti-fall 5s linear forwards, confetti-spin 2s linear infinite;
+}
+
+/* fall from top to bottom while spinning */
+@keyframes confetti-fall {
+  from { transform: translateY(0) rotate(0deg); }
+  to   { transform: translateY(110vh) rotate(720deg); }
+}
+@keyframes confetti-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
