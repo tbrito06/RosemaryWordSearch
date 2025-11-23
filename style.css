@@ -3,20 +3,38 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed; /* optional parallax effect */
+    background-attachment: fixed;
+
     font-family: Arial, sans-serif;
+    font-size: 22px; /* make all text larger */
     text-align: center;
     padding: 20px;
 }
 
-
-.preview-image {
-  max-width: 200px;
-  margin-bottom: 20px;
-  border-radius: 8px;
+/* Increase letter grid visibility */
+.grid td {
+    font-size: 28px;
 }
 
+/* Center the puzzle grid */
+.grid-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Remove word-list bullets */
+.wordlist ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.wordlist li {
+    font-size: 22px;
+}
+
+/* Canvas fallback styles (only if used) */
 canvas {
-  background: rgba(255,255,255,0.9);
-  border: 2px solid #333;
+    background: rgba(255,255,255,0.9);
+    border: 2px solid #333;
 }
