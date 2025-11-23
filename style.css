@@ -1,15 +1,17 @@
 body {
-    background-image: url("momWsearch_bkgnd.png");
+    background:
+        linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)),
+        url("momWsearch_bkgnd.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+
     font-family: Arial, sans-serif;
-    font-size: 22px;
+    font-size: 20px;
     text-align: center;
     padding: 20px;
 }
-
 /* Increase letter grid visibility */
 .grid td {
     font-size: 20px;
