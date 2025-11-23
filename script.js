@@ -9,6 +9,8 @@ let isDragging = false;
 let startCell = null;
 let currentHighlighted = []; // cells currently highlighted while dragging
 let foundWords = new Set();
+let confettiLaunched = false;
+
 
 // Build/initialize grid
 function createEmptyGrid() {
@@ -248,20 +250,24 @@ function touchEnd(e) {
 function markFound(cells, word) {
   cells.forEach(cell => {
     cell.classList.add("found");
-    // keep the letter visible
+    // keep the letter visible and struck through via CSS
   });
   foundWords.add(word);
   const li = document.querySelector(`li[data-word="${word}"]`);
   if (li) li.classList.add("done");
-  // Optional: check win
+  // Check for completion (will trigger confetti)
   checkWin();
 }
 
 function checkWin() {
-  if (foundWords.size === words.length) {
-    setTimeout(() => alert("You found all the words! 🎉"), 200);
+  if (foundWords.size === words.length && !confettiLaunched) {
+    confettiLaunched = true;
+    launchConfetti();
+    // optional celebratory message after a short delay
+    setTimeout(() => { alert("You found all the words! 🎉"); }, 500);
   }
 }
+
 
 // New puzzle generator
 function newPuzzle() {
@@ -294,3 +300,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   newPuzzle();
 });
+
+
+// Confetti generator
+function launchConfetti() {
+  const count = 80; // how many pieces
+  const colors = ['#f94144','#f3722c','#f9c74f','#90be6d','#577590','#43aa8b'];
+  const container = document.createElement('div');
+  container.className = 'confetti-container';
+  document.body.appendChild(container);
+
+  for (let i = 0; i < count; i++) {
+    const conf = document.createElement('div');
+    conf.className = 'confetti';
+    // random horizontal start
+    const left = Math.random() * 100;
+    conf.style.left = `${left}%`;
+    // random size and color
+    conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    conf.style.width = `${6 + Math.random() * 10}px`;
+    conf.style.height = `${6 + Math.random() * 10}px`;
+    // random delay so pieces are slightly staggered
+    conf.style.animationDelay = `${Math.random() * 0.5}s`;
+    container.appendChild(conf);
+  }
+
+  // remove the container after animation finishes
+  setTimeout(() => {
+    container.remove();
+  }, 6000);
+}
