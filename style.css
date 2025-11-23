@@ -1,9 +1,14 @@
 body {
-  background: pink url("preview.png") center/cover no-repeat;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  padding: 20px;
+    background-image: url("momWsearch_bkgnd.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* optional parallax effect */
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
 }
+
 
 .preview-image {
   max-width: 200px;
