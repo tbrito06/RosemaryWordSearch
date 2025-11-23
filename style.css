@@ -8,10 +8,11 @@ body {
     background-attachment: fixed;
 
     font-family: Arial, sans-serif;
-    font-size: 20px;
+    font-size: 18px;
     text-align: center;
     padding: 20px;
 }
+
 /* Increase letter grid visibility */
 .grid td {
     font-size: 20px;
@@ -22,10 +23,12 @@ body {
     user-select: none;
 }
 
-/* Center the puzzle grid */
-.grid-wrapper {
+/* Puzzle grid beside word list */
+main {
     display: flex;
     justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
     margin-top: 20px;
 }
 
@@ -41,11 +44,11 @@ body {
 
 /* Selected (dragging) */
 .grid td.selected {
-  background: rgba(255, 235, 150, 0.9);
-  transition: background 120ms;
+    background: rgba(255, 235, 150, 0.9);
+    transition: background 120ms;
 }
 
-/* Found word (continuous line strike-through) */
+/* Found word styling */
 .grid td.found {
     position: relative;
     background-color: rgba(255, 230, 0, 0.6);
@@ -73,41 +76,41 @@ body {
 
 /* Grid table */
 .grid {
-  border-collapse: collapse;
-  margin: 0 auto;
+    border-collapse: collapse;
+    margin: 0 auto;
 }
 
 /* Confetti container */
 .confetti-container {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 0;
-  pointer-events: none;
-  overflow: visible;
-  z-index: 9999;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 0;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 9999;
 }
 
 /* Confetti piece */
 .confetti {
-  position: absolute;
-  top: -10px;
-  display: inline-block;
-  opacity: 0.95;
-  border-radius: 2px;
-  transform-origin: center;
-  animation: confetti-fall 5s linear forwards,
-             confetti-spin 2s linear infinite;
+    position: absolute;
+    top: -10px;
+    display: inline-block;
+    opacity: 0.95;
+    border-radius: 2px;
+    transform-origin: center;
+    animation: confetti-fall 5s linear forwards,
+               confetti-spin 2s linear infinite;
 }
 
 /* Confetti animations */
 @keyframes confetti-fall {
-  from { transform: translateY(0) rotate(0deg); }
-  to   { transform: translateY(110vh) rotate(720deg); }
+    from { transform: translateY(0) rotate(0deg); }
+    to   { transform: translateY(110vh) rotate(720deg); }
 }
 
 @keyframes confetti-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
 }
