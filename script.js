@@ -1,6 +1,6 @@
 // Word list (uppercase)
 const words = [
-  "MOTHER","LOVE","LAWYER","BABA","GARDEN","xxxxx"
+  "MOTHER","LOVE","LAWYER","BABA","GARDEN","xxxxx",
   "LOYAL","FAMILY","FRIENDSHIP","PASSIONATE","ROSEMARY"
 ];
 
