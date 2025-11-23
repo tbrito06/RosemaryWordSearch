@@ -38,3 +38,37 @@ canvas {
     background: rgba(255,255,255,0.9);
     border: 2px solid #333;
 }
+
+/* visual for cells during drag/hover selection */
+.grid td.selected {
+  background: rgba(255, 235, 150, 0.9);
+  transition: background 120ms;
+}
+
+/* visual for found letters */
+.grid td.found {
+  background: rgba(144, 238, 144, 0.95); /* light green */
+  color: #111;
+  font-weight: bold;
+}
+
+/* visually strike-through found words */
+.wordlist li.done {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* ensure table cells are centered & spaced nicely */
+.grid td {
+  padding: 8px 10px;
+  border: 1px solid rgba(0,0,0,0.12);
+  text-align: center;
+  vertical-align: middle;
+  user-select: none; /* avoid accidental selection */
+}
+
+/* make the table itself auto-size and centered */
+.grid {
+  border-collapse: collapse;
+  margin: 0 auto;
+}
