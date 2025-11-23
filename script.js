@@ -1,3 +1,4 @@
+// Word list (uppercase)
 const words = [
   "MOTHER","LOVE","LAWYER","BABA","GARDEN",
   "LOYAL","FAMILY","FRIENDSHIP","PASSIONATE","ROSEMARY"
@@ -5,33 +6,34 @@ const words = [
 
 const size = 15;
 let grid = [];
-let selecting = false;
+let isDragging = false;
 let startCell = null;
+let currentHighlighted = []; // cells currently highlighted while dragging
+let foundWords = new Set();
 
-// Create empty grid
+// Build/initialize grid
 function createEmptyGrid() {
-  grid = Array.from({ length: size }, () => Array(size).fill(""));
+  return Array.from({ length: size }, () => Array(size).fill(""));
 }
 
-// Place a word randomly
-function placeWord(word) {
-  const directions = [
-    [1,0],[0,1],[-1,0],[0,-1],
-    [1,1],[1,-1],[-1,1],[-1,-1]
-  ];
+function placeWord(grid, word) {
   word = word.toUpperCase();
+  const directions = [
+    [1,0], [-1,0], [0,1], [0,-1],
+    [1,1], [1,-1], [-1,1], [-1,-1]
+  ];
 
-  while (true) {
+  let attempts = 0;
+  while (attempts < 1000) {
+    attempts++;
     const row = Math.floor(Math.random() * size);
     const col = Math.floor(Math.random() * size);
     const [dx, dy] = directions[Math.floor(Math.random() * directions.length)];
 
     let fits = true;
-
     for (let i = 0; i < word.length; i++) {
       const r = row + dy * i;
       const c = col + dx * i;
-
       if (r < 0 || r >= size || c < 0 || c >= size) { fits = false; break; }
       if (grid[r][c] !== "" && grid[r][c] !== word[i]) { fits = false; break; }
     }
@@ -42,117 +44,254 @@ function placeWord(word) {
         const c = col + dx * i;
         grid[r][c] = word[i];
       }
-      break;
+      return true;
     }
   }
+  // fallback: if we fail to place (extremely unlikely with these sizes), skip
+  return false;
 }
 
-// Fill unused cells with random letters
-function fillGrid() {
+function fillGrid(grid) {
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size; c++) {
-      if (grid[r][c] === "") {
-        grid[r][c] = letters[Math.floor(Math.random() * letters.length)];
-      }
+      if (grid[r][c] === "") grid[r][c] = letters[Math.floor(Math.random() * letters.length)];
     }
   }
 }
 
-// Build the HTML table
+// Render table
 function drawGrid() {
   const table = document.getElementById("puzzle");
   table.innerHTML = "";
-
   for (let r = 0; r < size; r++) {
-    const row = document.createElement("tr");
+    const tr = document.createElement("tr");
     for (let c = 0; c < size; c++) {
-      const cell = document.createElement("td");
-      cell.textContent = grid[r][c];
-      cell.dataset.row = r;
-      cell.dataset.col = c;
-      cell.addEventListener("click", handleCellClick);
-      row.appendChild(cell);
+      const td = document.createElement("td");
+      td.textContent = grid[r][c];
+      td.dataset.row = r;
+      td.dataset.col = c;
+      td.classList.add("cell");
+      // mouse events
+      td.addEventListener("mousedown", onPointerDown);
+      td.addEventListener("mouseover", onPointerOver);
+      td.addEventListener("mouseup", onPointerUp);
+      // touch events handled globally via touch handlers
+      tr.appendChild(td);
     }
-    table.appendChild(row);
+    table.appendChild(tr);
   }
 }
 
-// Draw word list
+// Word list rendering
 function drawWordList() {
-  const list = document.getElementById("words");
-  list.innerHTML = "";
+  const ul = document.getElementById("words");
+  ul.innerHTML = "";
   words.forEach(w => {
     const li = document.createElement("li");
     li.textContent = w;
-    li.id = `word-${w}`;
-    list.appendChild(li);
+    li.dataset.word = w;
+    li.classList.add("word-item");
+    ul.appendChild(li);
   });
 }
 
-// Handle selecting cells
-function handleCellClick(e) {
-  const cell = e.target;
-
-  if (!selecting) {
-    // Start selection
-    selecting = true;
-    startCell = cell;
-    cell.classList.add("selected");
-  } else {
-    // End selection
-    const endCell = cell;
-    highlightSelection(startCell, endCell);
-    selecting = false;
-    startCell = null;
-  }
+// Utilities
+function cellFromEventTarget(target) {
+  if (!target) return null;
+  if (target.tagName && target.tagName.toLowerCase() === "td") return target;
+  return null;
 }
 
-// Check selected path for a word
-function highlightSelection(start, end) {
-  const r1 = Number(start.dataset.row);
-  const c1 = Number(start.dataset.col);
-  const r2 = Number(end.dataset.row);
-  const c2 = Number(end.dataset.col);
+function clearHighlights() {
+  currentHighlighted.forEach(cell => cell.classList.remove("selected"));
+  currentHighlighted = [];
+}
 
-  const dx = Math.sign(c2 - c1);
-  const dy = Math.sign(r2 - r1);
+function cellsBetween(start, end) {
+  // returns array of td elements if start->end forms a straight line; otherwise []
+  if (!start || !end) return [];
+  const r1 = Number(start.dataset.row), c1 = Number(start.dataset.col);
+  const r2 = Number(end.dataset.row), c2 = Number(end.dataset.col);
 
-  let letters = "";
-  let cells = [];
+  const dr = Math.sign(r2 - r1);
+  const dc = Math.sign(c2 - c1);
 
+  // Not a straight line if movement is not straight or diagonal
+  const deltaR = Math.abs(r2 - r1);
+  const deltaC = Math.abs(c2 - c1);
+  if (!((deltaR === 0) || (deltaC === 0) || (deltaR === deltaC))) return [];
+
+  const cells = [];
   let r = r1, c = c1;
-
   while (true) {
     const td = document.querySelector(`td[data-row="${r}"][data-col="${c}"]`);
+    if (!td) return []; // should not happen
     cells.push(td);
-    letters += td.textContent;
-
     if (r === r2 && c === c2) break;
-    r += dy;
-    c += dx;
+    r += dr;
+    c += dc;
   }
+  return cells;
+}
 
-  if (words.includes(letters)) {
-    // Correct word found
-    cells.forEach(cell => cell.classList.add("found"));
-    document.getElementById(`word-${letters}`).classList.add("done");
-  } else {
-    // Wrong guess → remove temp highlight
-    cells.forEach(cell => cell.classList.remove("selected"));
+function wordFromCells(cells) {
+  return cells.map(td => td.textContent).join("");
+}
+
+// Selection handlers (mouse)
+function onPointerDown(e) {
+  // left button only
+  if (e.button !== 0) return;
+  const td = cellFromEventTarget(e.currentTarget);
+  if (!td) return;
+  isDragging = true;
+  startCell = td;
+  clearHighlights();
+  td.classList.add("selected");
+  currentHighlighted = [td];
+  // prevent text selection
+  e.preventDefault();
+}
+
+function onPointerOver(e) {
+  if (!isDragging) return;
+  const td = cellFromEventTarget(e.currentTarget);
+  if (!td) return;
+  // compute straight-line cells from startCell to current td
+  const cells = cellsBetween(startCell, td);
+  if (cells.length === 0) {
+    // not a straight line — show only startCell as selected
+    clearHighlights();
+    startCell.classList.add("selected");
+    currentHighlighted = [startCell];
+    return;
+  }
+  // update highlight
+  clearHighlights();
+  cells.forEach(cell => cell.classList.add("selected"));
+  currentHighlighted = cells;
+}
+
+function onPointerUp(e) {
+  if (!isDragging) return;
+  isDragging = false;
+  // evaluate
+  if (currentHighlighted.length > 0) {
+    const candidate = wordFromCells(currentHighlighted);
+    const candidateRev = candidate.split("").reverse().join("");
+    if (words.includes(candidate) && !foundWords.has(candidate)) {
+      markFound(currentHighlighted, candidate);
+    } else if (words.includes(candidateRev) && !foundWords.has(candidateRev)) {
+      markFound(currentHighlighted, candidateRev);
+    } else {
+      // not found — brief visual feedback then clear
+      // (we simply clear selection)
+    }
+  }
+  clearHighlights();
+  startCell = null;
+}
+
+// Touch support (map touch to underlying td)
+function touchStart(e) {
+  if (e.changedTouches.length === 0) return;
+  const t = e.changedTouches[0];
+  const el = document.elementFromPoint(t.clientX, t.clientY);
+  const td = cellFromEventTarget(el);
+  if (!td) return;
+  isDragging = true;
+  startCell = td;
+  clearHighlights();
+  td.classList.add("selected");
+  currentHighlighted = [td];
+  e.preventDefault();
+}
+
+function touchMove(e) {
+  if (!isDragging) return;
+  if (e.changedTouches.length === 0) return;
+  const t = e.changedTouches[0];
+  const el = document.elementFromPoint(t.clientX, t.clientY);
+  const td = cellFromEventTarget(el);
+  if (!td) return;
+  const cells = cellsBetween(startCell, td);
+  if (cells.length === 0) {
+    clearHighlights();
+    startCell.classList.add("selected");
+    currentHighlighted = [startCell];
+    return;
+  }
+  clearHighlights();
+  cells.forEach(cell => cell.classList.add("selected"));
+  currentHighlighted = cells;
+  e.preventDefault();
+}
+
+function touchEnd(e) {
+  if (!isDragging) return;
+  isDragging = false;
+  if (currentHighlighted.length > 0) {
+    const candidate = wordFromCells(currentHighlighted);
+    const candidateRev = candidate.split("").reverse().join("");
+    if (words.includes(candidate) && !foundWords.has(candidate)) {
+      markFound(currentHighlighted, candidate);
+    } else if (words.includes(candidateRev) && !foundWords.has(candidateRev)) {
+      markFound(currentHighlighted, candidateRev);
+    }
+  }
+  clearHighlights();
+  startCell = null;
+  e.preventDefault();
+}
+
+// Mark letters and list entry as found
+function markFound(cells, word) {
+  cells.forEach(cell => {
+    cell.classList.add("found");
+    // keep the letter visible
+  });
+  foundWords.add(word);
+  const li = document.querySelector(`li[data-word="${word}"]`);
+  if (li) li.classList.add("done");
+  // Optional: check win
+  checkWin();
+}
+
+function checkWin() {
+  if (foundWords.size === words.length) {
+    setTimeout(() => alert("You found all the words! 🎉"), 200);
   }
 }
 
-// Build everything
-function buildPuzzle() {
-  createEmptyGrid();
-  words.forEach(placeWord);
-  fillGrid();
+// New puzzle generator
+function newPuzzle() {
+  foundWords.clear();
+  grid = createEmptyGrid();
+  // Place words (try a few times if necessary)
+  words.forEach(w => placeWord(grid, w));
+  fillGrid(grid);
   drawGrid();
   drawWordList();
 }
 
-document.getElementById("resetBtn").addEventListener("click", buildPuzzle);
+// Wire up button and global touch handlers
+document.addEventListener("DOMContentLoaded", () => {
+  const resetBtn = document.getElementById("resetBtn");
+  if (resetBtn) resetBtn.addEventListener("click", newPuzzle);
 
-// Initialize on page load
-buildPuzzle();
+  // touch handlers on the table element
+  const puzzleTable = document.getElementById("puzzle");
+  puzzleTable.addEventListener("touchstart", touchStart, { passive: false });
+  puzzleTable.addEventListener("touchmove", touchMove, { passive: false });
+  puzzleTable.addEventListener("touchend", touchEnd, { passive: false });
+
+  // also listen for mouseup anywhere (in case pointer is released outside a cell)
+  document.addEventListener("mouseup", () => {
+    if (isDragging) {
+      onPointerUp();
+    }
+  });
+
+  newPuzzle();
+});
