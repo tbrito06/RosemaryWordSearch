@@ -8,18 +8,23 @@
 </head>
 <body>
 <div class="page">
-<div id="word-lines"></div>
 
+  <!-- Lines drawn over the puzzle -->
+  <div id="word-lines"></div>
+
+  <!-- Confetti -->
+  <div class="confetti-container"></div>
 
   <header>
     <h1>Word Search — Happy Birthday, Mom!</h1>
-    <p>Click a start letterand drag to the end letter to select a word. Words can go in any straight line (horizontal, vertical, or diagonal). Found words will be highlighted and crossed off the list.</p>
+    <p>Click a start letter and drag to the end letter to select a word. Words can go in any straight line (horizontal, vertical, or diagonal). Found words will be highlighted and crossed off the list.</p>
   </header>
 
   <main>
     <div class="grid-wrapper">
       <table id="puzzle" class="grid" aria-label="Word search grid"></table>
     </div>
+
     <aside class="wordlist">
       <h2>Words to find</h2>
       <ul id="words"></ul>
@@ -28,9 +33,11 @@
 
   <footer>
     <button id="resetBtn">Scramble Letters and Start Over</button>
-    <p class="small">Created in the honour of Rosemary Pawliuk — Enjoy!</p>
+    <p class="small">Created in honour of Rosemary Pawliuk — Enjoy!</p>
   </footer>
+
 </div>
+
 <script src="script.js"></script>
 </body>
 </html>
