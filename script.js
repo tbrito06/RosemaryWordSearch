@@ -248,18 +248,53 @@ function touchEnd(e) {
 
 // Mark letters and list entry as found
 function markFound(cells, word) {
-  cells.forEach(cell => {
-    cell.classList.add("found"); // continuous strike-through + highlight
-  });
-
+  // Highlight each cell as “found”
+  cells.forEach(cell => cell.classList.add("found"));
   foundWords.add(word);
 
+  // Update word list
   const li = document.querySelector(`li[data-word="${word}"]`);
   if (li) li.classList.add("done");
 
-  // Check if completed
+  // Draw direction line
+  drawWordLine(cells);
+
+  // Check win
   checkWin();
 }
+
+// Align found word strike through with word orientation
+function drawWordLine(cells) {
+  const first = cells[0];
+  const last = cells[cells.length - 1];
+
+  const r1 = Number(first.dataset.row);
+  const c1 = Number(first.dataset.col);
+  const r2 = Number(last.dataset.row);
+  const c2 = Number(last.dataset.col);
+
+  // Find pixel positions
+  const rect1 = first.getBoundingClientRect();
+  const rect2 = last.getBoundingClientRect();
+
+  const x1 = rect1.left + rect1.width / 2 + window.scrollX;
+  const y1 = rect1.top + rect1.height / 2 + window.scrollY;
+  const x2 = rect2.left + rect2.width / 2 + window.scrollX;
+  const y2 = rect2.top + rect2.height / 2 + window.scrollY;
+
+  const length = Math.hypot(x2 - x1, y2 - y1);
+  const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+
+  const line = document.createElement("div");
+  line.className = "word-line";
+  line.style.width = `${length}px`;
+  line.style.transform = `rotate(${angle}deg)`;
+  line.style.left = `${x1}px`;
+  line.style.top = `${y1}px`;
+
+  document.getElementById("word-lines").appendChild(line);
+}
+
 
 function checkWin() {
   if (foundWords.size === words.length && !confettiLaunched) {
