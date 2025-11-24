@@ -309,6 +309,11 @@ function checkWin() {
 
 // New puzzle generator
 function newPuzzle() {
+  // Remove all drawn lines
+  const wl = document.getElementById("word-lines");
+  if (wl) wl.innerHTML = "";
+
+  
   foundWords.clear();
   grid = createEmptyGrid();
   // Place words (try a few times if necessary)
