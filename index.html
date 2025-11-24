@@ -6,20 +6,26 @@
 <title>Word Search - Mom's Birthday</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 <div class="page">
-<div id="word-lines"></div>
-
 
   <header>
     <h1>Word Search — Happy Birthday, Mom!</h1>
-    <p>Click a start letterand drag to the end letter to select a word. Words can go in any straight line (horizontal, vertical, or diagonal). Found words will be highlighted and crossed off the list.</p>
+    <p>
+      Click a start letter and drag to the end letter to select a word.  
+      Words can go horizontally, vertically, or diagonally.  
+      Found words will be highlighted and crossed off the list.
+    </p>
   </header>
 
   <main>
+    <!-- Puzzle + word-lines overlay MUST be relative container -->
     <div class="grid-wrapper">
+      <div id="word-lines"></div>
       <table id="puzzle" class="grid" aria-label="Word search grid"></table>
     </div>
+
     <aside class="wordlist">
       <h2>Words to find</h2>
       <ul id="words"></ul>
@@ -30,7 +36,9 @@
     <button id="resetBtn">Scramble Letters and Start Over</button>
     <p class="small">Created in the honour of Rosemary Pawliuk — Enjoy!</p>
   </footer>
+
 </div>
+
 <script src="script.js"></script>
 </body>
 </html>
