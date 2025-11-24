@@ -80,6 +80,25 @@ main {
     margin: 0 auto;
 }
 
+/* orient strike through along word*/
+#word-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.word-line {
+  position: absolute;
+  height: 6px;
+  background: red;
+  border-radius: 3px;
+  opacity: 0.85;
+  transform-origin: 0 50%;
+  z-index: 999;
+}
+
+
 /* Confetti container */
 .confetti-container {
     position: fixed;
