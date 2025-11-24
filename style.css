@@ -6,30 +6,29 @@ body {
     background-position: center;
     background-repeat: repeat;
     background-attachment: fixed;
-
     font-family: Arial, sans-serif;
     font-size: 18px;
     text-align: center;
     padding: 20px;
 }
 
-/* Container for all drawn word‑lines */
+/* Container for ALL drawn word‑lines */
 #word-lines {
     position: absolute;
     top: 0;
     left: 0;
-    pointer-events: none;
+    pointer-events: none; /* don't block clicking the grid */
     width: 100%;
     height: 100%;
     z-index: 10;
 }
 
-/* Needed so word-lines overlay aligns correctly */
+/* Needed so lines overlay correctly over the table */
 .grid-wrapper {
     position: relative;
 }
 
-/* Increase letter grid visibility */
+/* Grid cell styling */
 .grid td {
     font-size: 20px;
     padding: 8px 10px;
@@ -39,7 +38,7 @@ body {
     user-select: none;
 }
 
-/* Puzzle grid beside word list */
+/* Layout: puzzle grid + word list */
 main {
     display: flex;
     justify-content: center;
@@ -48,7 +47,7 @@ main {
     margin-top: 16px;
 }
 
-/* Remove word-list bullets */
+/* Word list */
 .wordlist ul {
     list-style-type: none;
     padding-left: 0;
@@ -58,13 +57,13 @@ main {
     font-size: 22px;
 }
 
-/* Selected (while dragging) */
+/* While dragging */
 .grid td.selected {
     background: rgba(255, 235, 150, 0.9);
     transition: background 120ms;
 }
 
-/* Found word styling */
+/* Found words */
 .grid td.found {
     position: relative;
     background-color: rgba(255, 230, 0, 0.6);
@@ -72,7 +71,7 @@ main {
     font-weight: bold;
 }
 
-/* Word list strike-through */
+/* Strike-through completed word */
 .wordlist li.done {
     text-decoration: line-through;
     opacity: 0.6;
@@ -84,7 +83,7 @@ main {
     margin: 0 auto;
 }
 
-/* The drawn strike‑through line */
+/* Green line drawn across found words */
 .word-line {
     position: absolute;
     height: 2px;
@@ -95,19 +94,19 @@ main {
     z-index: 999;
 }
 
-/* Confetti container */
+/* Confetti container (full-screen area) */
 .confetti-container {
     position: fixed;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
-    height: 0;
+    height: 100vh;
     pointer-events: none;
     overflow: visible;
     z-index: 9999;
 }
 
-/* Confetti piece */
+/* Each confetti piece */
 .confetti {
     position: absolute;
     top: -10px;
@@ -120,12 +119,13 @@ main {
         confetti-spin 2s linear infinite;
 }
 
-/* Confetti animations */
+/* Confetti falling animation */
 @keyframes confetti-fall {
     from { transform: translateY(0) rotate(0deg); }
     to   { transform: translateY(110vh) rotate(720deg); }
 }
 
+/* Confetti spinning animation */
 @keyframes confetti-spin {
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
